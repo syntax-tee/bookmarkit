@@ -21,7 +21,7 @@ class BookmarkitRepositoryImpl(
 
     override fun addBook(book: Book) = bookDao.addBook(book)
 
-    override fun getBooks() = bookDao.getBooks().map { book -> BookAndGenre(book,genreDao.getGenreById(book.genreId)) }
+    override fun getBooks() = bookDao.getBooks()
 
     override fun getBookById(bookId: String): Book  = bookDao.getBookById(bookId)
 
@@ -52,5 +52,13 @@ class BookmarkitRepositoryImpl(
     }
 
     override fun removeReadingList(readingList: ReadingList) = readingListDao.removeReadingList(readingList)
+
+    override fun getBooksByGenre(genreId: String): List<BookAndGenre> {
+        genreDao.getBooksByGenre(genreId).let { booksByGenre ->
+            val books = booksByGenre.books ?: return emptyList()
+
+            return  books.map { BookAndGenre(it,booksByGenre.genre) }
+        }
+    }
 
 }

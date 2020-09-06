@@ -34,10 +34,14 @@
 
 package com.taiye.bookmarkit.model.relations
 
+import androidx.room.Embedded
+import androidx.room.Relation
 import com.taiye.bookmarkit.model.Book
 import com.taiye.bookmarkit.model.Genre
 
 class BooksByGenre(
+    @Embedded
     val genre: Genre,
-    val books: List<Book>
+    @Relation(parentColumn = "id", entityColumn = "bookGenreId")
+    val books: List<Book>?
 )

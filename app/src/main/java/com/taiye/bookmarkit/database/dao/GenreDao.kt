@@ -1,10 +1,8 @@
 package com.taiye.bookmarkit.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.taiye.bookmarkit.model.Genre
+import com.taiye.bookmarkit.model.relations.BooksByGenre
 
 
 @Dao
@@ -19,5 +17,15 @@ interface GenreDao{
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addGenres(genres:List<Genre>)
+
+    @Transaction
+    @Query("SELECT * FROM genre where id = :genreId")
+    fun getBooksByGenre(genreId: String): BooksByGenre
+
+    @Transaction
+    @Query("SELECT * FROM genre")
+    fun getBooksByGenres(): BooksByGenre
+
+
 
 }

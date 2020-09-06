@@ -42,4 +42,6 @@ interface BookmarkitRepository{
 
     fun removeReadingList(readingList: ReadingList)
 
+    fun getBooksByGenre(genreId: String): List<BookAndGenre>
+
 }
