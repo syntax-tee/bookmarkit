@@ -40,12 +40,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.model.relations.ReadingListsWithBooks
 import com.taiye.bookmarkit.ui.readingList.dialog.AddReadingListDialogFragment
 import com.taiye.bookmarkit.ui.readingListDetails.ReadingListDetailsActivity
 import com.taiye.bookmarkit.utils.createAndShowDialog
 import com.taiye.bookmarkit.utils.toast
 import com.taiye.bookmarkit.R
+import com.taiye.bookmarkit.model.ReadingList
 import kotlinx.android.synthetic.main.fragment_reading_list.*
 
 class ReadingListFragment : Fragment() {
@@ -53,6 +55,7 @@ class ReadingListFragment : Fragment() {
   private val adapter by lazy { ReadingListAdapter(::onItemSelected, ::onItemLongTapped) }
   private val readingLists = listOf<ReadingListsWithBooks>()
 
+  private val repository by lazy { App.repository }
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_reading_list, container, false)
@@ -72,7 +75,8 @@ class ReadingListFragment : Fragment() {
 
   // TODO load from DB
   private fun loadReadingLists() {
-    adapter.setData(readingLists)
+    adapter.setData(repository.getReadingList())
+    pullToRefresh.isRefreshing = false
   }
 
   private fun initListeners() {
@@ -81,6 +85,8 @@ class ReadingListFragment : Fragment() {
     addReadingList.setOnClickListener {
       showAddReadingListDialog()
     }
+
+    pullToRefresh.setOnRefreshListener { loadReadingLists() }
   }
 
   private fun showAddReadingListDialog() {
@@ -102,7 +108,8 @@ class ReadingListFragment : Fragment() {
   }
 
   private fun removeReadingList(readingList: ReadingListsWithBooks) {
-    // TODO remove reading list
+    repository.removeReadingList(ReadingList(readingList.id,readingList.name))
+    loadReadingLists()
   }
 
   private fun onItemSelected(readingList: ReadingListsWithBooks) {

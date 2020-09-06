@@ -40,6 +40,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.Review
 import kotlinx.android.synthetic.main.activity_add_book_review.*
@@ -47,7 +48,10 @@ import java.util.*
 
 class AddBookReviewActivity : AppCompatActivity() {
 
-  companion object {
+    private val repository by lazy { App.repository }
+
+
+    companion object {
     fun getIntent(context: Context) = Intent(context, AddBookReviewActivity::class.java)
   }
 
@@ -61,16 +65,15 @@ class AddBookReviewActivity : AppCompatActivity() {
     bookOption.adapter = ArrayAdapter(
         this@AddBookReviewActivity,
         android.R.layout.simple_spinner_dropdown_item,
-        listOf<String>()
+        repository.getBooks().map { it.book.name }
     )
 
     addReview.setOnClickListener { addBookReview() }
   }
 
-  // TODO save a book
   private fun addBookReview() {
     val rating = reviewRating.rating.toInt()
-    val bookId = ""
+    val bookId = repository.getBooks().firstOrNull{ it.book.name == bookOption.selectedItem}?.book?.id
 
     val imageUrl = bookImageUrl.text.toString()
     val notes = reviewNotes.text.toString()
@@ -81,10 +84,11 @@ class AddBookReviewActivity : AppCompatActivity() {
           rating = rating,
           notes = notes,
           imageUrl = imageUrl,
-          entries = emptyList(),
-          lastUpdatedDate = Date()
+        //  entries = emptyList(),
+         // lastUpdatedDate = Date()
       )
 
+        repository.addReview(bookReview)
       setResult(Activity.RESULT_OK)
       finish()
     }

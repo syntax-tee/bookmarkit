@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Librarian</string>
+    <string name="app_name">Bookmarkit</string>
     <string name="book_reviews">Book Reviews</string>
     <string name="reading_list">Reading List</string>
     <string name="book_title_hint">Book title</string>

@@ -40,12 +40,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.ReadingList
 import kotlinx.android.synthetic.main.dialog_add_reading_list.*
 
 class AddReadingListDialogFragment(private val onListAdded: () -> Unit) : DialogFragment() {
 
+  private  val repository by lazy {  App.repository }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
@@ -73,8 +75,8 @@ class AddReadingListDialogFragment(private val onListAdded: () -> Unit) : Dialog
     val readingListName = readingListNameInput.text.toString()
 
     if (readingListName.isNotBlank()) {
-      val readingList = ReadingList(name = readingListName, bookIds = emptyList())
-      // TODO add reading list
+      val readingList = ReadingList(name = readingListName)
+      repository.addReadingList(readingList)
 
       onListAdded()
       dismissAllowingStateLoss()

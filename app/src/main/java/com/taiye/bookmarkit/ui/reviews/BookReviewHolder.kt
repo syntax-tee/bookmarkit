@@ -50,8 +50,7 @@ class BookReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     reviewTitle.text = context.getString(R.string.review_title, book.name)
     reviewRating.rating = review.rating.toFloat()
-    reviewNumberOfComments.text =
-        context.getString(R.string.number_of_reading_entries, review.entries.size)
+   // reviewNumberOfComments.text = context.getString(R.string.number_of_reading_entries, review.entries.size)
     reviewDescription.text = review.notes
     Glide.with(this).load(review.imageUrl).into(bookImage)
 

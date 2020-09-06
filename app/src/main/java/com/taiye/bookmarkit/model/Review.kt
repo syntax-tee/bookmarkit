@@ -35,17 +35,21 @@
 package com.taiye.bookmarkit.model
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.taiye.bookmarkit.model.ReadingEntry
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
+@Entity
 data class Review(
+    @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
     val bookId: String,
     val rating: Int,
     val notes: String,
     val imageUrl: String,
-    val entries: List<ReadingEntry>,
-    val lastUpdatedDate: Date
+//    val entries: List<ReadingEntry>,
+//    val lastUpdatedDate: Date
 ) : Parcelable
