@@ -3,6 +3,8 @@ package com.taiye.bookmarkit.database.dao
 import androidx.room.*
 import com.taiye.bookmarkit.model.Book
 import com.taiye.bookmarkit.model.relations.BookAndGenre
+import com.taiye.bookmarkit.model.relations.BookReview
+import com.taiye.bookmarkit.model.relations.BooksByGenre
 
 
 @Dao

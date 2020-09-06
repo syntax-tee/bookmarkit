@@ -37,12 +37,10 @@ class BookmarkitRepositoryImpl(
 
     override fun removeReview(review: Review) = reviewDao.removeReview(review)
 
-    override fun getReviews(): List<BookReview>  = reviewDao.getReviews().map { BookReview(it,bookDao.getBookById(it.bookId)) }
+    override fun getReviews(): List<BookReview>  = reviewDao.getReviews()
 
-    override fun getReviewById(reviewId: String): BookReview  {
-        val review = reviewDao.getReviewById(reviewId)
-        return BookReview(review, bookDao.getBookById(review.bookId));
-    }
+    override fun getReviewById(reviewId: String): BookReview   = reviewDao.getReviewById(reviewId)
+
     override fun updateReview(review: Review) = reviewDao.updateReview(review)
 
     override fun addReadingList(readingList: ReadingList) = readingListDao.addReadingList(readingList)
@@ -60,5 +58,11 @@ class BookmarkitRepositoryImpl(
             return  books.map { BookAndGenre(it,booksByGenre.genre) }
         }
     }
+
+    override fun getBooksByRating(rating: Int): List<BookAndGenre> {
+        val reviewsByRating = reviewDao.getReviewsByRating(rating)
+        return  reviewsByRating.map { BookAndGenre(it.book,genreDao.getGenreById(it.book.genreId)) }
+    }
+
 
 }

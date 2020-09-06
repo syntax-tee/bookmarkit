@@ -16,6 +16,7 @@ import com.taiye.bookmarkit.ui.filter.FilterPickerDialogFragment
 import com.taiye.bookmarkit.utils.createAndShowDialog
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.ui.filter.ByGenre
+import com.taiye.bookmarkit.ui.filter.ByRating
 import kotlinx.android.synthetic.main.fragment_books.*
 import kotlinx.android.synthetic.main.fragment_reviews.pullToRefresh
 
@@ -69,6 +70,7 @@ class BooksFragment : Fragment() {
 
     val books = when(val currentFilter = filter){
         is ByGenre -> repository.getBooksByGenre(currentFilter.genreId)
+        is ByRating -> repository.getBooksByRating(currentFilter.rating)
         else   ->  repository.getBooks()
     }
 

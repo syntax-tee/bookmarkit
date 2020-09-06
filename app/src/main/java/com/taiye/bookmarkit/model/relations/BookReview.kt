@@ -35,12 +35,16 @@
 package com.taiye.bookmarkit.model.relations
 
 import android.os.Parcelable
+import androidx.room.Embedded
+import androidx.room.Relation
 import com.taiye.bookmarkit.model.Book
 import com.taiye.bookmarkit.model.Review
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class BookReview(
+    @Embedded
     val review: Review,
+    @Relation(parentColumn = "bookId", entityColumn = "id")
     val book: Book
 ) : Parcelable
