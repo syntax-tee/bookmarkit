@@ -40,10 +40,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.Review
 import kotlinx.android.synthetic.main.activity_add_book_review.*
+import kotlinx.coroutines.launch
 import java.util.*
 
 class AddBookReviewActivity : AppCompatActivity() {
@@ -62,16 +64,18 @@ class AddBookReviewActivity : AppCompatActivity() {
   }
 
   private fun initUi() {
-    bookOption.adapter = ArrayAdapter(
-        this@AddBookReviewActivity,
-        android.R.layout.simple_spinner_dropdown_item,
-        repository.getBooks().map { it.book.name }
-    )
+      lifecycleScope.launch {
+          bookOption.adapter = ArrayAdapter(
+              this@AddBookReviewActivity,
+              android.R.layout.simple_spinner_dropdown_item,
+              repository.getBooks().map { it.book.name }
+          )
+      }
 
     addReview.setOnClickListener { addBookReview() }
   }
 
-  private fun addBookReview() {
+  private fun addBookReview()  = lifecycleScope.launch{
     val rating = reviewRating.rating.toInt()
     val bookId = repository.getBooks().firstOrNull{ it.book.name == bookOption.selectedItem}?.book?.id
 

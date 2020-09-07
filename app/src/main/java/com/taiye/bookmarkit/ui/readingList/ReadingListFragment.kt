@@ -39,6 +39,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.model.relations.ReadingListsWithBooks
@@ -49,6 +50,7 @@ import com.taiye.bookmarkit.utils.toast
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.ReadingList
 import kotlinx.android.synthetic.main.fragment_reading_list.*
+import kotlinx.coroutines.launch
 
 class ReadingListFragment : Fragment() {
 
@@ -73,10 +75,11 @@ class ReadingListFragment : Fragment() {
     readingListRecyclerView.adapter = adapter
   }
 
-  // TODO load from DB
   private fun loadReadingLists() {
-    adapter.setData(repository.getReadingList())
-    pullToRefresh.isRefreshing = false
+    lifecycleScope.launch {
+      adapter.setData(repository.getReadingList())
+      pullToRefresh.isRefreshing = false
+    }
   }
 
   private fun initListeners() {
@@ -108,8 +111,11 @@ class ReadingListFragment : Fragment() {
   }
 
   private fun removeReadingList(readingList: ReadingListsWithBooks) {
-    repository.removeReadingList(ReadingList(readingList.id,readingList.name))
-    loadReadingLists()
+    lifecycleScope.launch {
+      repository.removeReadingList(ReadingList(readingList.id, readingList.name))
+      loadReadingLists()
+    }
+    pullToRefresh.setOnRefreshListener { loadReadingLists() }
   }
 
   private fun onItemSelected(readingList: ReadingListsWithBooks) {

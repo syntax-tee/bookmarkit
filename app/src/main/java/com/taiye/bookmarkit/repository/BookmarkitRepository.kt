@@ -12,19 +12,19 @@ import com.taiye.bookmarkit.model.relations.ReadingListsWithBooks
 interface BookmarkitRepository{
 
 
-    fun addBook(book: Book)
+    suspend fun addBook(book: Book)
 
-    fun getBooks(): List<BookAndGenre>
+    suspend fun getBooks(): List<BookAndGenre>
 
-    fun getBookById(bookId: String):Book
+    suspend fun getBookById(bookId: String):Book
 
-    fun removeBook(book:Book)
+    suspend fun removeBook(book:Book)
 
-    fun getGenres(): List<Genre>
+     fun getGenres(): List<Genre>
 
-    fun getGenreById(genreId:String):Genre
+    suspend fun getGenreById(genreId:String):Genre
 
-    fun addGenres(genres:List<Genre>)
+     fun addGenres(genres:List<Genre>)
 
     fun addReview(review: Review)
 
@@ -36,14 +36,14 @@ interface BookmarkitRepository{
 
     fun updateReview(review: Review)
 
-    fun addReadingList(readingList: ReadingList)
+    suspend fun addReadingList(readingList: ReadingList)
 
-    fun getReadingList():List<ReadingListsWithBooks>
+    suspend fun getReadingList():List<ReadingListsWithBooks>
 
-    fun removeReadingList(readingList: ReadingList)
+    suspend fun removeReadingList(readingList: ReadingList)
 
-    fun getBooksByGenre(genreId: String): List<BookAndGenre>
+    suspend fun getBooksByGenre(genreId: String): List<BookAndGenre>
 
-    fun getBooksByRating(rating:Int): List<BookAndGenre>
+    suspend fun getBooksByRating(rating:Int): List<BookAndGenre>
 
 }

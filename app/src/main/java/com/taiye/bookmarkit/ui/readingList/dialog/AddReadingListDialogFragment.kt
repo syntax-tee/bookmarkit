@@ -40,10 +40,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.ReadingList
 import kotlinx.android.synthetic.main.dialog_add_reading_list.*
+import kotlinx.coroutines.launch
 
 class AddReadingListDialogFragment(private val onListAdded: () -> Unit) : DialogFragment() {
 
@@ -74,6 +76,7 @@ class AddReadingListDialogFragment(private val onListAdded: () -> Unit) : Dialog
   private fun createReadingList() {
     val readingListName = readingListNameInput.text.toString()
 
+    lifecycleScope.launch {
     if (readingListName.isNotBlank()) {
       val readingList = ReadingList(name = readingListName)
       repository.addReadingList(readingList)
@@ -81,5 +84,6 @@ class AddReadingListDialogFragment(private val onListAdded: () -> Unit) : Dialog
       onListAdded()
       dismissAllowingStateLoss()
     }
+  }
   }
 }

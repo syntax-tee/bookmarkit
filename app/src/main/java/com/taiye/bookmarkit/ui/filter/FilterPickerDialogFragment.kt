@@ -8,10 +8,14 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.Genre
+import kotlinx.android.synthetic.main.activity_book_review_details.*
 import kotlinx.android.synthetic.main.dialog_filter_books.*
+import kotlinx.coroutines.launch
 
 class FilterPickerDialogFragment(private val onFilterSelected: (Filter?) -> Unit)
   : DialogFragment() {
@@ -33,38 +37,41 @@ class FilterPickerDialogFragment(private val onFilterSelected: (Filter?) -> Unit
       updateOptions(checkedId)
     }
 
-    genrePicker.adapter = ArrayAdapter(
+    lifecycleScope.launch {
+      genrePicker.adapter = ArrayAdapter(
         requireContext(),
         android.R.layout.simple_spinner_dropdown_item,
         repository.getGenres().map { it.name }
-    )
-
-    selectFilter.setOnClickListener { filterBooks() }
+      )
+      selectFilter.setOnClickListener { filterBooks() }
+    }
   }
 
   private fun filterBooks() {
-    val selectedGenre = repository.getGenres().firstOrNull { genre ->
-      genre.name == genrePicker.selectedItem
-    }?.id
+    lifecycleScope.launch {
+      val selectedGenre = repository.getGenres().firstOrNull { genre ->
+        genre.name == genrePicker.selectedItem
+      }?.id
 
-    val rating = ratingPicker.rating.toInt()
+      val rating = ratingPicker.rating.toInt()
 
-    if (selectedGenre == null && filterOptions.checkedRadioButtonId == R.id.byGenreFilter) {
-      return
-    }
+      if (selectedGenre == null && filterOptions.checkedRadioButtonId == R.id.byGenreFilter) {
+        return@launch
+      }
 
-    if ((rating < 1 || rating > 5) && filterOptions.checkedRadioButtonId == R.id.byRatingFilter) {
-      return
-    }
+      if ((rating < 1 || rating > 5) && filterOptions.checkedRadioButtonId == R.id.byRatingFilter) {
+        return@launch
+      }
 
-    val filter = when (filterOptions.checkedRadioButtonId) {
-      R.id.byGenreFilter -> ByGenre(selectedGenre ?: "")
-      R.id.byRatingFilter -> ByRating(ratingPicker.rating.toInt())
-      else -> null
-    }
+      val filter = when (filterOptions.checkedRadioButtonId) {
+        R.id.byGenreFilter -> ByGenre(selectedGenre ?: "")
+        R.id.byRatingFilter -> ByRating(ratingPicker.rating.toInt())
+        else -> null
+      }
 
     onFilterSelected(filter)
     dismissAllowingStateLoss()
+  }
   }
 
   private fun updateOptions(checkedId: Int) {

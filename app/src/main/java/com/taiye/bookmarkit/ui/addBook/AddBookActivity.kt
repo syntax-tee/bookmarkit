@@ -40,11 +40,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.Book
 import com.taiye.bookmarkit.utils.toast
 import kotlinx.android.synthetic.main.activity_add_book.*
+import kotlinx.coroutines.launch
 
 class AddBookActivity : AppCompatActivity() {
 
@@ -63,30 +65,37 @@ class AddBookActivity : AppCompatActivity() {
   private fun initUi() {
     addBook.setOnClickListener { createBook() }
 
-    genrePicker.adapter = ArrayAdapter(
+    lifecycleScope.launch {
+      genrePicker.adapter = ArrayAdapter(
         this@AddBookActivity,
         android.R.layout.simple_spinner_dropdown_item,
         repository.getGenres().map { it.name }
-    )
+      )
+    }
   }
 
   // TODO implement database call!
   private fun createBook() {
-    val title = bookTitle.text.toString()
-    val description = bookDescription.text.toString()
-    val genreId = repository.getGenres().firstOrNull{ it.name == genrePicker.selectedItem}?.id
+    lifecycleScope.launch {
 
-    if (title.isNotBlank() && description.isNotBlank() && !genreId.isNullOrBlank()) {
-      val book = Book(
+      val title = bookTitle.text.toString()
+      val description = bookDescription.text.toString()
+      val genreId = repository.getGenres().firstOrNull { it.name == genrePicker.selectedItem }?.id
+
+      if (title.isNotBlank() && description.isNotBlank() && !genreId.isNullOrBlank()) {
+        val book = Book(
           name = title,
           description = description,
           genreId = genreId
-      )
+        )
 
-      repository.addBook(book)
-      toast("Book added! :]")
-      setResult(Activity.RESULT_OK)
-      finish()
+        lifecycleScope.launch {
+          repository.addBook(book)
+          toast("Book added! :]")
+          setResult(Activity.RESULT_OK)
+          finish()
+        }
+      }
     }
   }
 }

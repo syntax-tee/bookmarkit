@@ -19,19 +19,19 @@ class BookmarkitRepositoryImpl(
          private val reviewDao: ReviewDao
 ):BookmarkitRepository {
 
-    override fun addBook(book: Book) = bookDao.addBook(book)
+    override suspend fun addBook(book: Book) = bookDao.addBook(book)
 
-    override fun getBooks() = bookDao.getBooks()
+    override suspend fun getBooks() = bookDao.getBooks()
 
-    override fun getBookById(bookId: String): Book  = bookDao.getBookById(bookId)
+    override suspend fun getBookById(bookId: String): Book  = bookDao.getBookById(bookId)
 
-    override fun removeBook(book: Book) = bookDao.removeBook(book)
+    override suspend fun removeBook(book: Book) = bookDao.removeBook(book)
 
-    override fun getGenres() = genreDao.getGenres()
+    override  fun getGenres() = genreDao.getGenres()
 
-    override fun getGenreById(genreId: String) = genreDao.getGenreById(genreId)
+    override suspend fun getGenreById(genreId: String) = genreDao.getGenreById(genreId)
 
-    override fun addGenres(genres: List<Genre>)  = genreDao.addGenres(genres)
+    override  fun addGenres(genres: List<Genre>)  = genreDao.addGenres(genres)
 
     override fun addReview(review: Review) = reviewDao.addReview(review)
 
@@ -43,15 +43,15 @@ class BookmarkitRepositoryImpl(
 
     override fun updateReview(review: Review) = reviewDao.updateReview(review)
 
-    override fun addReadingList(readingList: ReadingList) = readingListDao.addReadingList(readingList)
+    override suspend fun addReadingList(readingList: ReadingList) = readingListDao.addReadingList(readingList)
 
-    override fun getReadingList(): List<ReadingListsWithBooks> = readingListDao.getReadingList().map {
+    override suspend fun getReadingList(): List<ReadingListsWithBooks> = readingListDao.getReadingList().map {
         ReadingListsWithBooks(it.id, it.name, emptyList())
     }
 
-    override fun removeReadingList(readingList: ReadingList) = readingListDao.removeReadingList(readingList)
+    override suspend fun removeReadingList(readingList: ReadingList) = readingListDao.removeReadingList(readingList)
 
-    override fun getBooksByGenre(genreId: String): List<BookAndGenre> {
+    override suspend fun getBooksByGenre(genreId: String): List<BookAndGenre> {
         genreDao.getBooksByGenre(genreId).let { booksByGenre ->
             val books = booksByGenre.books ?: return emptyList()
 
@@ -59,7 +59,7 @@ class BookmarkitRepositoryImpl(
         }
     }
 
-    override fun getBooksByRating(rating: Int): List<BookAndGenre> {
+    override suspend fun getBooksByRating(rating: Int): List<BookAndGenre> {
         val reviewsByRating = reviewDao.getReviewsByRating(rating)
         return  reviewsByRating.map { BookAndGenre(it.book,genreDao.getGenreById(it.book.genreId)) }
     }

@@ -8,14 +8,13 @@ import com.taiye.bookmarkit.model.ReadingList
 interface ReadingListDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addReadingList(readingList: ReadingList)
-
+    suspend  fun addReadingList(readingList: ReadingList)
 
     @Query("SELECT * FROM ReadingList")
-    fun getReadingList(): List<ReadingList>
+    suspend  fun getReadingList(): List<ReadingList>
 
     @Delete
-    fun removeReadingList(readingList: ReadingList)
+    suspend  fun removeReadingList(readingList: ReadingList)
 }
 
 

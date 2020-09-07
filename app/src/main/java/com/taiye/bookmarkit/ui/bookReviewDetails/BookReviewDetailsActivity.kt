@@ -38,6 +38,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.taiye.bookmarkit.App
@@ -51,6 +52,7 @@ import com.taiye.bookmarkit.utils.formatDateToText
 import com.taiye.bookmarkit.utils.toast
 import com.taiye.bookmarkit.R
 import kotlinx.android.synthetic.main.activity_book_review_details.*
+import kotlinx.coroutines.launch
 import java.util.*
 
 class BookReviewDetailsActivity : AppCompatActivity() {
@@ -101,16 +103,17 @@ class BookReviewDetailsActivity : AppCompatActivity() {
   private fun displayData(reviewId: String) {
     refreshData(reviewId)
     val data = bookReview ?: return
-    val genre = repository.getGenreById(data.book.genreId)
 
-    Glide.with(this).load(data.review.imageUrl).into(bookImage)
-    reviewTitle.text = data.book.name
-    reviewRating.rating = data.review.rating.toFloat()
-    reviewDescription.text = data.review.notes
-   // lastUpdated.text = formatDateToText(data.review.lastUpdatedDate)
-    bookGenre.text = genre.name
-
-   // adapter.setData(data.review.entries)
+    lifecycleScope.launch {
+      val genre = repository.getGenreById(data.book.genreId)
+      reviewTitle.text = data.book.name
+      reviewRating.rating = data.review.rating.toFloat()
+      reviewDescription.text = data.review.notes
+      // lastUpdated.text = formatDateToText(data.review.lastUpdatedDate)
+      bookGenre.text = genre.name
+    }
+      Glide.with(this).load(data.review.imageUrl).into(bookImage)
+      // adapter.setData(data.review.entries)
   }
 
   private fun refreshData(id: String) {
