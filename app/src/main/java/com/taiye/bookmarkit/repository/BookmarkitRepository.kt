@@ -8,6 +8,7 @@ import com.taiye.bookmarkit.model.Review
 import com.taiye.bookmarkit.model.relations.BookAndGenre
 import com.taiye.bookmarkit.model.relations.BookReview
 import com.taiye.bookmarkit.model.relations.ReadingListsWithBooks
+import kotlinx.coroutines.flow.Flow
 
 interface BookmarkitRepository{
 
@@ -20,7 +21,7 @@ interface BookmarkitRepository{
 
     suspend fun removeBook(book:Book)
 
-     fun getGenres(): List<Genre>
+    fun getGenres(): List<Genre>
 
     suspend fun getGenreById(genreId:String):Genre
 
@@ -30,7 +31,7 @@ interface BookmarkitRepository{
 
     fun removeReview(review: Review)
 
-    fun getReviews():List<BookReview>
+    fun getReviews(): Flow<List<BookReview>>
 
     fun getReviewById(reviewId:String):BookReview
 

@@ -11,6 +11,7 @@ import com.taiye.bookmarkit.model.Review
 import com.taiye.bookmarkit.model.relations.BookAndGenre
 import com.taiye.bookmarkit.model.relations.BookReview
 import com.taiye.bookmarkit.model.relations.ReadingListsWithBooks
+import kotlinx.coroutines.flow.Flow
 
 class BookmarkitRepositoryImpl(
          private val bookDao: BookDao,
@@ -37,7 +38,7 @@ class BookmarkitRepositoryImpl(
 
     override fun removeReview(review: Review) = reviewDao.removeReview(review)
 
-    override fun getReviews(): List<BookReview>  = reviewDao.getReviews()
+    override fun getReviews(): Flow<List<BookReview>> = reviewDao.getReviews()
 
     override fun getReviewById(reviewId: String): BookReview   = reviewDao.getReviewById(reviewId)
 

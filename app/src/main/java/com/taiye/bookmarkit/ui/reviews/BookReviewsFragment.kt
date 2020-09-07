@@ -39,6 +39,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.model.relations.BookReview
@@ -48,6 +49,9 @@ import com.taiye.bookmarkit.utils.createAndShowDialog
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.Review
 import kotlinx.android.synthetic.main.fragment_reviews.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
  * Fetches and displays notes from the API.
@@ -56,59 +60,76 @@ private const val REQUEST_CODE_ADD_REVIEW = 102
 
 class BookReviewsFragment : Fragment() {
 
-  private val adapter by lazy { BookReviewAdapter(::onItemSelected, ::onItemLongTapped) }
+    private val adapter by lazy { BookReviewAdapter(::onItemSelected, ::onItemLongTapped) }
 
-  private val repository by lazy { App.repository }
+    private val repository by lazy { App.repository }
+    private val bookReviewFlow by lazy { repository.getReviews() }
 
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
-    return inflater.inflate(R.layout.fragment_reviews, container, false)
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    initListeners()
-    initUi()
-    loadBookReviews()
-  }
-
-  private fun initUi() {
-    reviewsRecyclerView.layoutManager = LinearLayoutManager(context)
-    reviewsRecyclerView.adapter = adapter
-  }
-
-  private fun initListeners() {
-    pullToRefresh.isEnabled = false
-
-    addBookReview.setOnClickListener {
-      startActivityForResult(
-          AddBookReviewActivity.getIntent(requireContext()), REQUEST_CODE_ADD_REVIEW
-      )
+    override fun onCreateView(
+      inflater: LayoutInflater, container: ViewGroup?,
+      savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_reviews, container, false)
     }
 
-    pullToRefresh.setOnRefreshListener { loadBookReviews() }
-  }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListeners()
+        initUi()
+        lifecycleScope.launch {
+            loadBookReviews()
+        }
+    }
 
-  private fun onItemSelected(item: BookReview) {
-    startActivity(BookReviewDetailsActivity.getIntent(requireContext(), item))
-  }
+    private fun initUi() {
+        reviewsRecyclerView.layoutManager = LinearLayoutManager(context)
+        reviewsRecyclerView.adapter = adapter
+        pullToRefresh.isEnabled = false
+    }
 
-  private fun onItemLongTapped(item: BookReview) {
-    createAndShowDialog(requireContext(),
-        getString(R.string.delete_title),
-        getString(R.string.delete_review_message, item.book.name),
-        onPositiveAction = { removeReviewFromRepo(item) })
-  }
+    private fun initListeners() {
+        pullToRefresh.isEnabled = false
 
-  private fun removeReviewFromRepo(item: BookReview) {
-   repository.removeReview(item.review)
-    loadBookReviews()
+        addBookReview.setOnClickListener {
+            startActivityForResult(
+              AddBookReviewActivity.getIntent(requireContext()), REQUEST_CODE_ADD_REVIEW
+            )
+        }
 
-  }
+        pullToRefresh.setOnRefreshListener {
+            lifecycleScope.launch {
+                loadBookReviews()
+            }
+        }
+    }
 
-  private fun loadBookReviews() {
-    adapter.setData(repository.getReviews())
-    pullToRefresh.isRefreshing = false
-  }
+    private fun onItemSelected(item: BookReview) {
+        startActivity(BookReviewDetailsActivity.getIntent(requireContext(), item))
+    }
+
+    private fun onItemLongTapped(item: BookReview) {
+        createAndShowDialog(requireContext(),
+          getString(R.string.delete_title),
+          getString(R.string.delete_review_message, item.book.name),
+          onPositiveAction = { removeReviewFromRepo(item) })
+    }
+
+    private fun removeReviewFromRepo(item: BookReview) = lifecycleScope.launch {
+        repository.removeReview(item.review)
+        lifecycleScope.launch {
+            loadBookReviews()
+        }
+    }
+
+    private suspend fun loadBookReviews() = lifecycleScope.launch {
+        pullToRefresh.isRefreshing = false
+
+        bookReviewFlow.catch { error ->
+            error.printStackTrace()
+        }.collect { bookReviewFlow ->
+            adapter.setData(bookReviewFlow)
+        }
+
+    }
 }

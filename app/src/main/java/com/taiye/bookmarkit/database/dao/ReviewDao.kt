@@ -3,6 +3,7 @@ package com.taiye.bookmarkit.database.dao
 import androidx.room.*
 import com.taiye.bookmarkit.model.Review
 import com.taiye.bookmarkit.model.relations.BookReview
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -15,7 +16,7 @@ interface ReviewDao {
     fun updateReview(review: Review)
 
     @Query("SELECT * FROM review")
-    fun getReviews(): List<BookReview>
+    fun getReviews(): Flow<List<BookReview>>
 
     @Query("SELECT * FROM review WHERE id =:reviewId")
     fun getReviewById(reviewId: String): BookReview
