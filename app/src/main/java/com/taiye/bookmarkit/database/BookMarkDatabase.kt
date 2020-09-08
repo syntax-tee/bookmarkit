@@ -18,7 +18,8 @@ const val DATABASE_VERSION = 1
 
 @Database(
      entities = [Book::class, Genre::class, ReadingList::class, Review::class],
-     version = DATABASE_VERSION
+     version = DATABASE_VERSION,
+    exportSchema = false
 )
 abstract class BookMarkDatabase : RoomDatabase(){
 

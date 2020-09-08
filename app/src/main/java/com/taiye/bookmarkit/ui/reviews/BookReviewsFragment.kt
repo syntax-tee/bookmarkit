@@ -47,8 +47,8 @@ import com.taiye.bookmarkit.ui.addReview.AddBookReviewActivity
 import com.taiye.bookmarkit.ui.bookReviewDetails.BookReviewDetailsActivity
 import com.taiye.bookmarkit.utils.createAndShowDialog
 import com.taiye.bookmarkit.R
-import com.taiye.bookmarkit.model.Review
 import kotlinx.android.synthetic.main.fragment_reviews.*
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -63,7 +63,7 @@ class BookReviewsFragment : Fragment() {
     private val adapter by lazy { BookReviewAdapter(::onItemSelected, ::onItemLongTapped) }
 
     private val repository by lazy { App.repository }
-    private val bookReviewFlow by lazy { repository.getReviews() }
+    private val bookReviewFlow by lazy { repository.getReviewsWithFlows() }
 
 
     override fun onCreateView(
@@ -127,7 +127,7 @@ class BookReviewsFragment : Fragment() {
 
         bookReviewFlow.catch { error ->
             error.printStackTrace()
-        }.collect { bookReviewFlow ->
+        }.collect { bookReviewFlow->
             adapter.setData(bookReviewFlow)
         }
 

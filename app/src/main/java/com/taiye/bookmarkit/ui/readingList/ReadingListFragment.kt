@@ -50,6 +50,8 @@ import com.taiye.bookmarkit.utils.toast
 import com.taiye.bookmarkit.R
 import com.taiye.bookmarkit.model.ReadingList
 import kotlinx.android.synthetic.main.fragment_reading_list.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ReadingListFragment : Fragment() {
@@ -58,6 +60,8 @@ class ReadingListFragment : Fragment() {
   private val readingLists = listOf<ReadingListsWithBooks>()
 
   private val repository by lazy { App.repository }
+  private val readingListFlow by lazy { repository.getReadingListsFlow()}
+
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_reading_list, container, false)
@@ -75,21 +79,19 @@ class ReadingListFragment : Fragment() {
     readingListRecyclerView.adapter = adapter
   }
 
-  private fun loadReadingLists() {
-    lifecycleScope.launch {
-      adapter.setData(repository.getReadingList())
-      pullToRefresh.isRefreshing = false
-    }
+  private fun loadReadingLists() = lifecycleScope.launch {
+     readingListFlow.catch {
+       it.printStackTrace()
+     }.collect {
+       readingLists ->  adapter.setData(readingLists)
+     }
   }
 
   private fun initListeners() {
     pullToRefresh.isEnabled = false
-
     addReadingList.setOnClickListener {
       showAddReadingListDialog()
     }
-
-    pullToRefresh.setOnRefreshListener { loadReadingLists() }
   }
 
   private fun showAddReadingListDialog() {
@@ -113,9 +115,7 @@ class ReadingListFragment : Fragment() {
   private fun removeReadingList(readingList: ReadingListsWithBooks) {
     lifecycleScope.launch {
       repository.removeReadingList(ReadingList(readingList.id, readingList.name))
-      loadReadingLists()
     }
-    pullToRefresh.setOnRefreshListener { loadReadingLists() }
   }
 
   private fun onItemSelected(readingList: ReadingListsWithBooks) {

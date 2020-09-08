@@ -35,11 +35,13 @@
 package com.taiye.bookmarkit.model.relations
 
 import android.os.Parcelable
+import androidx.room.PrimaryKey
 import com.taiye.bookmarkit.model.relations.BookAndGenre
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ReadingListsWithBooks(
+    @PrimaryKey
     val id: String,
     val name: String,
     val books: List<BookAndGenre>

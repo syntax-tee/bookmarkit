@@ -15,9 +15,15 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun updateReview(review: Review)
 
+    @Transaction
     @Query("SELECT * FROM review")
-    fun getReviews(): Flow<List<BookReview>>
+    suspend  fun getReviews(): List<BookReview>
 
+    @Transaction
+    @Query("SELECT * FROM review")
+    fun getReviewsWithFlows(): Flow<List<BookReview>>
+
+    @Transaction
     @Query("SELECT * FROM review WHERE id =:reviewId")
     fun getReviewById(reviewId: String): BookReview
 

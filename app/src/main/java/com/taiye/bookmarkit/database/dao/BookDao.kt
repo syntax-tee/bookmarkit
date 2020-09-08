@@ -10,6 +10,7 @@ import com.taiye.bookmarkit.model.relations.BooksByGenre
 @Dao
 interface BookDao{
 
+    @Transaction
     @Query("SELECT * FROM books")
     suspend  fun getBooks(): List<BookAndGenre>
 
