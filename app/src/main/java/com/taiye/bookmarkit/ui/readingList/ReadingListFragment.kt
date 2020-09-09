@@ -57,13 +57,11 @@ import kotlinx.coroutines.launch
 class ReadingListFragment : Fragment() {
 
   private val adapter by lazy { ReadingListAdapter(::onItemSelected, ::onItemLongTapped) }
-  private val readingLists = listOf<ReadingListsWithBooks>()
-
   private val repository by lazy { App.repository }
-  private val readingListFlow by lazy { repository.getReadingListsFlow()}
+  private val readingListsFlow by lazy { repository.getReadingListsFlow() }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
+                            savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_reading_list, container, false)
   }
 
@@ -77,18 +75,17 @@ class ReadingListFragment : Fragment() {
   private fun initUi() {
     readingListRecyclerView.layoutManager = LinearLayoutManager(context)
     readingListRecyclerView.adapter = adapter
+    pullToRefresh.isEnabled = false
   }
 
   private fun loadReadingLists() = lifecycleScope.launch {
-     readingListFlow.catch {
-       it.printStackTrace()
-     }.collect {
-       readingLists ->  adapter.setData(readingLists)
-     }
+    readingListsFlow.catch { it.printStackTrace() }
+      .collect { readingLists ->
+        adapter.setData(readingLists)
+      }
   }
 
   private fun initListeners() {
-    pullToRefresh.isEnabled = false
     addReadingList.setOnClickListener {
       showAddReadingListDialog()
     }
@@ -106,15 +103,18 @@ class ReadingListFragment : Fragment() {
 
   private fun onItemLongTapped(readingList: ReadingListsWithBooks) {
     createAndShowDialog(requireContext(),
-        getString(R.string.delete_title),
-        getString(R.string.delete_message, readingList.name),
-        onPositiveAction = { removeReadingList(readingList) }
+      getString(R.string.delete_title),
+      getString(R.string.delete_message, readingList.name),
+      onPositiveAction = { removeReadingList(readingList) }
     )
   }
 
   private fun removeReadingList(readingList: ReadingListsWithBooks) {
     lifecycleScope.launch {
-      repository.removeReadingList(ReadingList(readingList.id, readingList.name))
+      repository.removeReadingList(ReadingList(
+        readingList.id,
+        readingList.name,
+        readingList.books.map { it.book.id }))
     }
   }
 

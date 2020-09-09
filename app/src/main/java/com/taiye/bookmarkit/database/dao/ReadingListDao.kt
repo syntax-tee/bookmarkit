@@ -9,16 +9,22 @@ import kotlinx.coroutines.flow.Flow
 interface ReadingListDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend  fun addReadingList(readingList: ReadingList)
-
-    @Query("SELECT * FROM readingList")
-    suspend  fun getReadingList(): List<ReadingList>
+    suspend fun addReadingList(readingList: ReadingList)
 
     @Query("SELECT * FROM readinglist")
-    fun getReadingListFlow(): Flow<List<ReadingList>>
+    suspend fun getReadingLists(): List<ReadingList>
+
+    @Query("SELECT * FROM readinglist")
+    fun getReadingListsFlow(): Flow<List<ReadingList>>
 
     @Delete
-    suspend  fun removeReadingList(readingList: ReadingList)
+    suspend fun removeReadingList(readingList: ReadingList)
+
+    @Query("SELECT * FROM readinglist WHERE id = :listId")
+    suspend fun getReadingListById(listId: String): ReadingList
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateReadingList(newReadingList: ReadingList)
 }
 
 

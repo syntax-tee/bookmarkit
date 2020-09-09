@@ -25,11 +25,11 @@ class BookmarkitRepositoryImpl(
 
     override suspend fun getBooks() = bookDao.getBooks()
 
-    override suspend fun getBookById(bookId: String): Book = bookDao.getBookById(bookId)
+    override suspend fun getBookById(bookId: String): BookAndGenre = bookDao.getBookById(bookId)
 
     override suspend fun removeBook(book: Book) = bookDao.removeBook(book)
 
-    override fun getGenres() = genreDao.getGenres()
+    override suspend  fun getGenres() = genreDao.getGenres()
 
     override suspend fun getGenreById(genreId: String) = genreDao.getGenreById(genreId)
 
@@ -47,20 +47,40 @@ class BookmarkitRepositoryImpl(
 
     override fun updateReview(review: Review) = reviewDao.updateReview(review)
 
-    override suspend fun addReadingList(readingList: ReadingList) =
-        readingListDao.addReadingList(readingList)
+    override suspend fun addReadingList(readingList: ReadingList) = readingListDao.addReadingList(readingList)
 
-    override suspend fun getReadingList(): List<ReadingListsWithBooks> =
-        readingListDao.getReadingList().map {
-            ReadingListsWithBooks(it.id, it.name, emptyList())
+    override suspend fun getReadingLists(): List<ReadingListsWithBooks> =
+        readingListDao.getReadingLists().map { readingList ->
+            ReadingListsWithBooks(
+                readingList.id,
+                readingList.name,
+                readingList.bookIds.map { getBookById(it) }
+            )
         }
 
-    override fun getReadingListsFlow(): Flow<List<ReadingListsWithBooks>> {
-      return  readingListDao.getReadingListFlow().map { items ->
-            items.map {
-                ReadingListsWithBooks(it.id, it.name, emptyList())
+    override fun getReadingListsFlow(): Flow<List<ReadingListsWithBooks>> =
+        readingListDao.getReadingListsFlow().map { items ->
+            items.map { readingList ->
+                ReadingListsWithBooks(
+                    readingList.id,
+                    readingList.name,
+                    readingList.bookIds.map { getBookById(it) }
+                )
             }
         }
+
+    override suspend fun getReadingListById(listId: String): ReadingListsWithBooks {
+        return readingListDao.getReadingListById(listId).let { readingList ->
+            ReadingListsWithBooks(
+                readingList.id,
+                readingList.name,
+                readingList.bookIds.map { getBookById(it) }
+            )
+        }
+    }
+
+    override suspend fun updateReadingList(newReadingList: ReadingList) {
+        readingListDao.updateReadingList(newReadingList)
     }
 
     override suspend fun removeReadingList(readingList: ReadingList) =
@@ -78,6 +98,8 @@ class BookmarkitRepositoryImpl(
         val reviewsByRating = reviewDao.getReviewsByRating(rating)
         return reviewsByRating.map { BookAndGenre(it.book, genreDao.getGenreById(it.book.genreId)) }
     }
+
+
 
 
 }

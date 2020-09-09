@@ -16,11 +16,11 @@ interface BookmarkitRepository {
 
     suspend fun getBooks(): List<BookAndGenre>
 
-    suspend fun getBookById(bookId: String): Book
+    suspend fun getBookById(bookId: String): BookAndGenre
 
     suspend fun removeBook(book: Book)
 
-    fun getGenres(): List<Genre>
+     suspend fun getGenres(): List<Genre>
 
     suspend fun getGenreById(genreId: String): Genre
 
@@ -40,9 +40,13 @@ interface BookmarkitRepository {
 
     suspend fun addReadingList(readingList: ReadingList)
 
-    suspend fun getReadingList(): List<ReadingListsWithBooks>
+    suspend fun getReadingLists(): List<ReadingListsWithBooks>
 
     fun getReadingListsFlow(): Flow<List<ReadingListsWithBooks>>
+
+    suspend fun getReadingListById(listId: String): ReadingListsWithBooks
+
+    suspend fun updateReadingList(newReadingList: ReadingList)
 
     suspend fun removeReadingList(readingList: ReadingList)
 

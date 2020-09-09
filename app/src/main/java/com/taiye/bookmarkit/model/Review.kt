@@ -37,6 +37,10 @@ package com.taiye.bookmarkit.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.taiye.bookmarkit.database.converters.DateConverter
+import com.taiye.bookmarkit.database.converters.ReadEntryConverter
 import com.taiye.bookmarkit.model.ReadingEntry
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -50,6 +54,8 @@ data class Review(
     val rating: Int,
     val notes: String,
     val imageUrl: String,
-//    val entries: List<ReadingEntry>,
-//    val lastUpdatedDate: Date
+    @TypeConverters(DateConverter::class)
+    val lastUpdatedDate: Date,
+    @TypeConverters(ReadEntryConverter::class)
+    val entries: List<ReadingEntry>
 ) : Parcelable

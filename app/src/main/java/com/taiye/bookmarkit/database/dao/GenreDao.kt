@@ -10,7 +10,7 @@ interface GenreDao{
 
 
     @Query("SELECT * FROM genre")
-     fun getGenres(): List<Genre>
+    suspend fun getGenres(): List<Genre>
 
     @Query("SELECT * FROM genre WHERE id= :genreId")
     suspend fun getGenreById(genreId:String):Genre

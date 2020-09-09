@@ -109,11 +109,11 @@ class BookReviewDetailsActivity : AppCompatActivity() {
       reviewTitle.text = data.book.name
       reviewRating.rating = data.review.rating.toFloat()
       reviewDescription.text = data.review.notes
-      // lastUpdated.text = formatDateToText(data.review.lastUpdatedDate)
+      lastUpdated.text = formatDateToText(data.review.lastUpdatedDate)
       bookGenre.text = genre.name
     }
       Glide.with(this).load(data.review.imageUrl).into(bookImage)
-      // adapter.setData(data.review.entries)
+       adapter.setData(data.review.entries)
   }
 
   private fun refreshData(id: String) {
@@ -136,25 +136,26 @@ class BookReviewDetailsActivity : AppCompatActivity() {
   private fun addNewEntry(readingEntry: ReadingEntry) {
     val data = bookReview?.review ?: return
 
-    //val updatedReview = data.copy(entries = data.entries + readingEntry,
-    //    lastUpdatedDate = Date())
-
-    // TODO update review
-    toast("Entry added!")
-
-    displayData(data.id)
+    val updatedReview = data.copy(entries = data.entries + readingEntry,
+        lastUpdatedDate = Date())
+    lifecycleScope.launch {
+      repository.updateReview(updatedReview)
+      toast("Entry added!")
+      displayData(data.id)
+    }
   }
 
   private fun removeReadingEntry(readingEntry: ReadingEntry) {
     val data = bookReview ?: return
     val currentReview = data.review
 
-      //val newReview = currentReview.copy(
-     //    entries = currentReview.entries - readingEntry,
-     //    lastUpdatedDate = Date()
-    // )
-   // TODO update review
-
-    loadData()
+      val newReview = currentReview.copy(
+         entries = currentReview.entries - readingEntry,
+         lastUpdatedDate = Date()
+     )
+    lifecycleScope.launch {
+      repository.updateReview(newReview)
+      loadData()
+    }
   }
 }

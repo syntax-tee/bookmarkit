@@ -9,10 +9,8 @@ import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.taiye.bookmarkit.App
 import com.taiye.bookmarkit.R
-import com.taiye.bookmarkit.model.Genre
 import kotlinx.android.synthetic.main.activity_book_review_details.*
 import kotlinx.android.synthetic.main.dialog_filter_books.*
 import kotlinx.coroutines.launch

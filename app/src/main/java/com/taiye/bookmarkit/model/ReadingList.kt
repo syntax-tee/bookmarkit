@@ -37,6 +37,8 @@ package com.taiye.bookmarkit.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.taiye.bookmarkit.database.converters.BooksIdsConverter
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -45,6 +47,7 @@ import java.util.*
 class ReadingList(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
-    val name: String
-    //val bookIds: List<String>
+    val name: String,
+    @TypeConverters(BooksIdsConverter::class)
+    val bookIds: List<String>
 ) : Parcelable
